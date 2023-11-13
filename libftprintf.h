@@ -6,7 +6,7 @@
 /*   By: acroue <acroue@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/12 18:07:32 by acroue            #+#    #+#             */
-/*   Updated: 2023/11/12 18:14:16 by acroue           ###   ########.fr       */
+/*   Updated: 2023/11/13 14:43:42 by acroue           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,13 +16,24 @@
 # include <stdlib.h>
 # include <stdarg.h>
 
-typedef struct s_printf
+typedef struct s_print
 {
 	char			*content;
 	size_t			*length;
-	struct s_printf	*next;
-}	t_printf;
+	void			*next;
+}	t_print;
 
-int	ft_printf(const char *format, ...);
+typedef struct s_flags_manage
+{
+	char	space;
+	char	sign;
+	char	justify;
+	char	zero_padding;
+	char	hashtag;
+
+}	t_flags_m;
+
+// int	ft_printf(const char *format, ...);
+
 
 #endif
