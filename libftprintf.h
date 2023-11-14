@@ -6,7 +6,7 @@
 /*   By: acroue <acroue@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/12 18:07:32 by acroue            #+#    #+#             */
-/*   Updated: 2023/11/13 14:43:42 by acroue           ###   ########.fr       */
+/*   Updated: 2023/11/14 09:33:18 by acroue           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 # include <stdlib.h>
 # include <stdarg.h>
+# include <unistd.h>
 
 typedef struct s_print
 {

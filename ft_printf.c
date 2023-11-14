@@ -6,16 +6,31 @@
 /*   By: acroue <acroue@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/12 18:14:53 by acroue            #+#    #+#             */
-/*   Updated: 2023/11/13 14:55:57 by acroue           ###   ########.fr       */
+/*   Updated: 2023/11/14 19:10:32 by acroue           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libftprintf.h"
 
-// int	ft_printf(const char *format, ...)
-// {
-	
-// }
+int	ft_strlen(char *s)
+{
+	int	i;
+
+	i = 0;
+	while (s[i] != '\0')
+		i++;
+	return (i);
+}
+
+int	ft_putchar(char c)
+{
+	return (write(1, &c, 1));
+}
+
+int	ft_putstr(char *s)
+{
+	return (write(1, s, ft_strlen(s)));
+}
 
 #include <stdio.h>
 
@@ -23,102 +38,129 @@ int	ft_isflag(char c)
 {
 	if (c == 'c' || c == 's' || c == 'p' || c == 'd' || c == 'i' || c == 'u')
 		return (1);
-	else if (c == 'x' || c == 'X')
+	else if (c == 'x' || c == 'X' || c == '%')
 		return (1);
 	else
 		return (0);
 }
 
-int	ft_isparam(char c, char *params)
+void	ft_print_nbr(long n)
 {
-	size_t	i;
+	char	c;
 
-	i = 0;
-	while (i < 4)
+	c = n % 10 + 48;
+	if (n >= 10)
 	{
-		if (c == params[i])
-		{
-			return (1);
-		}
+		ft_print_nbr(n / 10);
 	}
-	return (0);
+	write(1, &c, 1);
 }
 
-void	ft_flag_manager(t_flags_m *flag, char c)
+int	ft_put_signed(int n)
 {
-	flag->space = 0;
-	flag->sign = 0;
-	flag->justify = 0;
-	flag->zero_padding = 0;
-	flag->hashtag = 0;
-	if (c == ' ')
-		flag->space = 1;
-	if (c == '+')
-		flag->sign = 1;
-	if (c == '-')
-		flag->justify = 1;
-	if (c == '0')
-		flag->zero_padding = 1;
-	if (c == '#')
-		flag->hashtag = 1;
-}
-
-char	*ft_check_flag(char *format)
-{
-	size_t		i;
-	t_flags_m	*flag;
-
-	flag = malloc(sizeof(t_flags_m));
-	if (!flag)
-		return (0);
-	i = 0;
-	while (!ft_isflag(format[i]) && !(format[i] >= '1' && format[i] <= '9') && format[i])
+	int	length;
+	int	temp;
+	
+	temp = 0;
+	length = 1;
+	write(1, "-", n < 0);
+	if (n == -2147483648)
+		return (write(1, "2147483648", 10) + 1);
+	else if (n < 0)
 	{
-		if (ft_isparam(format[i], " +-0#"))
-			ft_flag_manager(flag, format[i]);
-		i++;
+		length++;
+		n *= -1;
 	}
-	printf("%d\n%d\n%d\n%d\n%d\n", flag->space, flag->sign, flag->justify, flag->zero_padding, flag->hashtag);
-
-	free(flag);
-
-	// // creer node avec node_length puis node_length = 0
-	// if (format[i + 1] == '%')
-	// 	i++; // ajouter une node %
-	// else if (ft_isflag(format[i + 1]))
-	// {
-	// 	i++; // ajouter une node correspondante ?
-	// }
-	// else
-	// 	return (0); // % suivi d'un mauvais flag
-
-	return ("salut");
+	temp = n;
+	while (temp >= 10)
+	{
+		temp /= 10;
+		length++;
+	}
+	ft_print_nbr(n);
+	// printf("\n\tLEN = %d\n", length);
+	return (length);
 }
 
-size_t	ft_count_flags(char *format)
+int	ft_put_unsigned(unsigned int n)
+{
+	unsigned int	temp;
+	size_t			length;
+	
+	temp = n;
+	length = 1;
+	while (temp >= 10)
+	{
+		temp /= 10;
+		length++;
+	}
+	ft_print_nbr(n);
+	// printf("\n\tLEN = %zu\n", length);
+	return (length);
+}
+
+int	ft_flag_manage(char c, va_list arg)
+{
+	if (c == '%')
+		return (ft_putchar(37));
+	else if (c == 'c')
+		return (ft_putchar(va_arg(arg, int)));
+	else if (c == 's')
+		return (ft_putstr(va_arg(arg, char*)));
+	else if (c == 'x' || c == 'X')
+		return (write(1, "hex", 3));
+	else if (c == 'p')
+		return (write(1, "pointer", 7));
+	else if (c == 'd' || c == 'i')
+		return (ft_put_signed(va_arg(arg, int)));
+	else if (c == 'u')
+		return (ft_put_unsigned(va_arg(arg, unsigned int)));
+	else
+		return (write(1, "you are not supposed to see this", 32));
+}
+
+size_t	ft_printf(const char *format, ...)
 {
 	size_t	i;
 	size_t	length;
-	size_t	node_length;
+	va_list	arg;
 
 	i = 0;
 	length = 0;
-	node_length = 0;
+	va_start(arg, format);
 	while (format[i] != '\0')
 	{
-		if (format[i] == '%')
+		if (format[i] == '%' && ft_isflag(format[i + 1]))
 		{
-			ft_check_flag(&format[i + 1]);
+			i++;
+			length += ft_flag_manage(format[i], arg);
+		}
+		else
+		{
+			ft_putchar(format[i]);
+			length++;
 		}
 		i++;
-		length++;
-		node_length++;
 	}
-	return (1);
+	va_end(arg);
+	return (length);
 }
 
 int	main(int argc, char *argv[])
 {
-	ft_check_flag(argv[1]);
+	int	a;
+	int	b;
+	printf("%d\t%s\n",argc ,argv[0]);
+	a = ft_printf("salut %% %c %s %x %X %p %d %i %u\n", 'D', "SALUT", -0xee, -0xee, -0xee);
+	b = printf("salut %% %c %s hex hex pointer %d %i %u\n", 'D', "SALUT", -0xee, -0xee, -0xee);
+
+	printf("\n%d\t%d\n", a, b);
+
+	a = ft_printf("%d %i %u\n", -0xee, -0xee, -0xee);
+	b = printf("%d %i %u\n", -0xee, -0xee, -0xee);
+
+	printf("\n%d\t%d\n", a, b);
 	return (0);
 }
+
+// ./a.out "salut %% %c %s %x %X %p %d %i %u"
