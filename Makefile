@@ -6,18 +6,17 @@
 #    By: acroue <acroue@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/11/11 11:51:52 by acroue            #+#    #+#              #
-#    Updated: 2023/11/12 18:12:50 by acroue           ###   ########.fr        #
+#    Updated: 2023/11/15 11:42:23 by acroue           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-SRCS =	ft_printf.c
-
-SRCS_BONUS =	
+SRCS =	ft_printf.c \
+		ft_put.c \
+		ft_strlen_printf.c
 
 CC = cc
 CFLAGS = -Wall -Wextra -Werror
 OBJS = $(SRCS:.c=.o)
-OBJS_BONUS = $(SRCS_BONUS:.c=.o)
 NAME = libftprintf.a
 RM = rm -f
 
@@ -34,8 +33,5 @@ fclean: clean
 
 ${NAME} : ${OBJS}
 	@ar rcs ${NAME} ${OBJS}
-
-bonus : ${OBJS} ${OBJS_BONUS}
-	@ar rcs ${NAME} ${OBJS} ${OBJS_BONUS}
 
 re : fclean all

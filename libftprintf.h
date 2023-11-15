@@ -6,7 +6,7 @@
 /*   By: acroue <acroue@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/12 18:07:32 by acroue            #+#    #+#             */
-/*   Updated: 2023/11/14 09:33:18 by acroue           ###   ########.fr       */
+/*   Updated: 2023/11/15 11:44:47 by acroue           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,24 +17,16 @@
 # include <stdarg.h>
 # include <unistd.h>
 
-typedef struct s_print
-{
-	char			*content;
-	size_t			*length;
-	void			*next;
-}	t_print;
-
-typedef struct s_flags_manage
-{
-	char	space;
-	char	sign;
-	char	justify;
-	char	zero_padding;
-	char	hashtag;
-
-}	t_flags_m;
-
-// int	ft_printf(const char *format, ...);
-
+int		ft_putchar(char c);
+int		ft_putstr(char *s);
+int		ft_isflag(char c);
+int		ft_flag_manage(char c, va_list arg);
+size_t	ft_printf(const char *format, ...);
+void	ft_print_nbr(long n);
+int		ft_put_signed(int n);
+int		ft_put_unsigned(unsigned int n);
+int		ft_put_hex(char *str, int len, int is_address);
+int		ft_putnbr_base(long long n, char *base, int is_address);
+int	ft_strlen(char *s);
 
 #endif
