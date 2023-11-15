@@ -6,7 +6,7 @@
 /*   By: acroue <acroue@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/12 18:14:53 by acroue            #+#    #+#             */
-/*   Updated: 2023/11/14 19:10:32 by acroue           ###   ########.fr       */
+/*   Updated: 2023/11/15 11:02:58 by acroue           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,9 +36,11 @@ int	ft_putstr(char *s)
 
 int	ft_isflag(char c)
 {
-	if (c == 'c' || c == 's' || c == 'p' || c == 'd' || c == 'i' || c == 'u')
+	if (c == 'c' || c == 's' || c == '%')
 		return (1);
-	else if (c == 'x' || c == 'X' || c == '%')
+	else if (c == 'd' || c == 'i' || c == 'u')
+		return (1);
+	else if (c == 'x' || c == 'X' || c == 'p')
 		return (1);
 	else
 		return (0);
@@ -99,6 +101,49 @@ int	ft_put_unsigned(unsigned int n)
 	return (length);
 }
 
+int	ft_put_hex(char *str, int len, int is_address)
+{
+	size_t	length;
+
+	length = 0;
+	if (is_address == 2)
+		length += write(1, "0x", 2);
+	else if (is_address == 1)
+		length += write(1, "-", 1);
+	while (len--)
+		length += write(1, &str[len], 1);
+	free(str);
+	return (length);
+}
+
+int	ft_putnbr_base(long long n, char *base, int is_address)
+{
+	int		b_length;
+	size_t	i;
+	char	*str;
+
+	if (is_address == 2)
+		n = (unsigned long long)n;
+	b_length = ft_strlen(base);
+	str = malloc((b_length + 1) * sizeof(char));
+	if (!str)
+		return (0);
+	i = 0;
+	if (n < 0)
+	{
+		n *= -1;
+		is_address = 1;
+	}
+	while (n > 0)
+	{
+		str[i] = base[n % b_length];
+		n /= b_length;
+		i++;
+	}
+	str[i] = '\0';
+	return (ft_put_hex(str, i, is_address));
+}
+
 int	ft_flag_manage(char c, va_list arg)
 {
 	if (c == '%')
@@ -107,14 +152,16 @@ int	ft_flag_manage(char c, va_list arg)
 		return (ft_putchar(va_arg(arg, int)));
 	else if (c == 's')
 		return (ft_putstr(va_arg(arg, char*)));
-	else if (c == 'x' || c == 'X')
-		return (write(1, "hex", 3));
-	else if (c == 'p')
-		return (write(1, "pointer", 7));
 	else if (c == 'd' || c == 'i')
 		return (ft_put_signed(va_arg(arg, int)));
 	else if (c == 'u')
 		return (ft_put_unsigned(va_arg(arg, unsigned int)));
+	else if (c == 'x')
+		return (ft_putnbr_base(va_arg(arg, long long), "0123456789abcdef", 0));
+	else if (c == 'X')
+		return (ft_putnbr_base(va_arg(arg, long long), "0123456789ABCDEF", 0));
+	else if (c == 'p')
+		return (ft_putnbr_base(va_arg(arg, long long), "0123456789abcdef", 2));
 	else
 		return (write(1, "you are not supposed to see this", 32));
 }
