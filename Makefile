@@ -26,7 +26,7 @@ all: ${NAME}
 	@${CC} ${CFLAGS} -c $< -o ${<:.c=.o}
 
 clean:
-	@${RM} ${OBJS} ${OBJS_BONUS}
+	@${RM} ${OBJS}
 
 fclean: clean
 	@${RM} ${NAME}
